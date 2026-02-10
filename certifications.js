@@ -39,7 +39,7 @@ var certificationsData = [
     title: 'Soft Skills',
     organization: 'DTC',
     date: '30/9/2024',
-    image: 'image/certifications/SoftSkills.png'
+    image: 'image/certifications/skills.png'
   },
   {
     title: 'Business English',
