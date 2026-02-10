@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Eslam Elsaied - Machine Learning Engineer & Data Analyst Portfolio">
+  <title>Eslam Elsaied | ML Engineer & Data Analyst</title>
+
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ========== LOADING ANIMATION ========== -->
+  <div id="loader" class="loader">
+    <div class="loader-inner">
+      <div class="loader-ring"></div>
+      <span class="loader-text">Loading...</span>
+    </div>
+  </div>
+
+  <!-- ========== NAVIGATION BAR ========== -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo">EE</a>
+      <button id="nav-toggle" class="nav-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-menu">
+        <li><a href="#home" class="nav-link active">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#education" class="nav-link">Education</a></li>
+        <li><a href="#skills" class="nav-link">Skills</a></li>
+        <li><a href="#projects" class="nav-link">Projects</a></li>
+        <li><a href="#certifications" class="nav-link">Certifications</a></li>
+        <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+        <li><a href="#services" class="nav-link">Services</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========== SECTION 1 — HERO (HOMEPAGE) ========== -->
+  <section id="home" class="hero">
+    <canvas id="hero-neural-canvas" class="hero-neural-canvas" aria-hidden="true"></canvas>
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+      <div class="shape shape-5"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-image-wrapper">
+        <!-- Replace src with your profile photo URL -->
+        <img src="image\profilephoto.jpeg" alt="Eslam Elsaied" class="hero-profile-img">
+      </div>
+      <h1 class="hero-title">Hi, I am <span class="highlight">Eslam Elsaied</span></h1>
+      <p class="hero-typing-wrapper">
+        <span class="typing-text" id="typing-text"></span>
+        <span class="typing-cursor">|</span>
+      </p>
+      <div class="hero-buttons">
+        <a href="cv.pdf" class="btn btn-primary" download>
+          <i class="fas fa-download"></i> Download CV
+        </a>
+        <a href="#projects" class="btn btn-secondary">
+          View Projects <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 2 — ABOUT ME ========== -->
+  <section id="about" class="about">
+    <div class="about-mouse-bg" id="about-mouse-bg"></div>
+    <div class="container">
+      <h2 class="section-title" data-reveal>About Me</h2>
+      <div class="about-grid" data-reveal>
+        <div class="about-image-wrapper">
+          <!-- Replace with your about photo URL -->
+          <img src="image\profilephoto.jpeg" alt="Eslam Elsaied" class="about-img">
+        </div>
+        <div class="about-text">
+          <p>
+            Machine Learning Engineer with a strong Computer Science background and hands-on experience in Python, NumPy, Pandas, Matplotlib, and scikit-learn. I am currently advancing my ML skills through practical projects and specialized training at DEPI and NTI. My Full-Stack background strengthened my programming fundamentals and Git workflow, along with improved communication through Business English and soft skills training. Passionate about turning data into insights and open to internship and collaboration opportunities in ML, AI, and Data Science.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 3 — EDUCATION ========== -->
+  <section id="education" class="education">
+    <div class="container">
+      <h2 class="section-title" data-reveal>Education</h2>
+      <div class="education-timeline" data-reveal>
+        <div class="education-card">
+          <div class="education-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div class="education-content">
+            <h3>Bachelor of Computer Science</h3>
+            <p class="education-institution">Misr Higher Institute for Commerce & Computers in El Mansura (MET)</p>
+            <p class="education-grade"><strong>Grade:</strong> Very Good</p>
+            <p class="education-dept"><strong>Department:</strong> Computer Science</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 4 — SKILLS & TOOLS ========== -->
+  <section id="skills" class="skills">
+    <div class="container">
+      <h2 class="section-title" data-reveal>Skills & Tools</h2>
+      <div class="skills-grid">
+        <!-- Core Computer Science -->
+        <div class="skill-category" data-reveal>
+          <div class="skill-category-header">
+            <i class="fas fa-laptop-code"></i>
+            <h3>Core Computer Science Courses</h3>
+          </div>
+          <div class="skill-items">
+            <div class="skill-item">
+              <span class="skill-name">Computer Science Fundamentals</span>
+              <div class="skill-bar"><div class="skill-fill" data-level="90"></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Programming & Development -->
+        <div class="skill-category" data-reveal>
+          <div class="skill-category-header">
+            <i class="fas fa-code"></i>
+            <h3>Programming & Development Courses</h3>
+          </div>
+          <div class="skill-items">
+            <div class="skill-item">
+              <span class="skill-name">Python</span>
+              <div class="skill-bar"><div class="skill-fill" data-level="90"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">HTML, CSS, JavaScript</span>
+              <div class="skill-bar"><div class="skill-fill" data-level="85"></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Mathematics & Logic -->
+        <div class="skill-category" data-reveal>
+          <div class="skill-category-header">
+            <i class="fas fa-calculator"></i>
+            <h3>Mathematics & Logic</h3>
+          </div>
+          <div class="skill-items">
+            <div class="skill-item">
+              <span class="skill-name">Math & Statistics</span>
+              <div class="skill-bar"><div class="skill-fill" data-level="85"></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- AI & Data -->
+        <div class="skill-category" data-reveal>
+          <div class="skill-category-header">
+            <i class="fas fa-brain"></i>
+            <h3>AI & Data Courses</h3>
+          </div>
+          <div class="skill-items">
+            <div class="skill-item">
+              <span class="skill-name">Machine Learning</span>
+              <div class="skill-bar"><div class="skill-fill" data-level="88"></div></div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-name">Data Science</span>
+              <div class="skill-bar"><div class="skill-fill" data-level="85"></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Business & General -->
+        <div class="skill-category" data-reveal>
+          <div class="skill-category-header">
+            <i class="fas fa-briefcase"></i>
+            <h3>Business & General Knowledge</h3>
+          </div>
+          <div class="skill-items">
+            <div class="skill-item">
+              <span class="skill-name">Soft Skills & Business English</span>
+              <div class="skill-bar"><div class="skill-fill" data-level="80"></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Tools -->
+        <div class="skill-category skill-category-tools" data-reveal>
+          <div class="skill-category-header">
+            <i class="fas fa-tools"></i>
+            <h3>Tools</h3>
+          </div>
+          <div class="tools-tags">
+            <span>NumPy</span><span>Pandas</span><span>Matplotlib</span><span>Seaborn</span>
+            <span>Scikit-Learn</span><span>Jupyter</span><span>Colab</span><span>Git</span>
+            <span>GitHub</span><span>VS Code</span><span>PyCharm</span><span>Excel</span>
+            <span>CSV/JSON</span><span>HTML</span><span>CSS</span><span>JavaScript</span>
+            <span>CLI</span><span>Virtual Envs</span><span>Notion</span><span>Trello</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 5 — PROJECTS ========== -->
+  <section id="projects" class="projects">
+    <div class="container">
+      <h2 class="section-title" data-reveal>Projects</h2>
+      <div class="projects-grid" id="projects-grid">
+        <!-- Project cards are injected by script.js from projects.js data -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 6 — CERTIFICATIONS ========== -->
+  <section id="certifications" class="certifications">
+    <div class="container">
+      <h2 class="section-title" data-reveal>Certifications</h2>
+      <div class="cert-grid" id="certifications-grid">
+        <!-- Certification cards are injected by script.js from certifications.js data -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Certificate Modal -->
+  <div id="cert-modal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+      <img id="modal-cert-img" src="" alt="Certificate">
+    </div>
+  </div>
+
+  <!-- ML Demo Modal (classification simulation) -->
+  <div id="demo-modal" class="modal">
+    <div class="modal-overlay" id="demo-modal-overlay"></div>
+    <div class="modal-content demo-modal-content">
+      <button class="modal-close" id="demo-modal-close" aria-label="Close">&times;</button>
+      <div class="demo-modal-box">
+        <h3 class="demo-modal-title">Survival Prediction (Simulation)</h3>
+        <form id="demo-form" class="demo-form">
+          <div class="demo-form-row">
+            <div class="demo-form-group">
+              <label for="demo-age">Age</label>
+              <input type="number" id="demo-age" name="age" min="0" max="100" value="30" required>
+            </div>
+            <div class="demo-form-group">
+              <label for="demo-fare">Fare</label>
+              <input type="number" id="demo-fare" name="fare" min="0" step="0.01" value="32" required>
+            </div>
+          </div>
+          <div class="demo-form-row">
+            <div class="demo-form-group">
+              <label for="demo-pclass">Passenger Class</label>
+              <select id="demo-pclass" name="pclass">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+            <div class="demo-form-group">
+              <label for="demo-gender">Gender</label>
+              <select id="demo-gender" name="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary demo-predict-btn">
+            <i class="fas fa-calculator"></i> Predict
+          </button>
+        </form>
+        <div id="demo-result" class="demo-result" aria-live="polite" hidden>
+          <p class="demo-result-prob"><span id="demo-result-prob-text">Survival Probability: 0%</span></p>
+          <p class="demo-result-pred"><span id="demo-result-pred-text"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 7 — TESTIMONIALS ========== -->
+  <section id="testimonials" class="testimonials">
+    <div class="container">
+      <h2 class="section-title" data-reveal>What People Say</h2>
+      <div class="testimonial-carousel" data-reveal>
+        <div class="testimonial-track">
+          <div class="testimonial-slide">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Avatar" class="testimonial-avatar">
+            <h4>Alex Chen</h4>
+            <p class="testimonial-role">Senior Data Scientist</p>
+            <div class="testimonial-stars">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Eslam's ML projects show strong fundamentals and clean code. A great collaborator with a keen eye for detail."</p>
+          </div>
+          <div class="testimonial-slide">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sam" alt="Avatar" class="testimonial-avatar">
+            <h4>Samira Hassan</h4>
+            <p class="testimonial-role">Tech Lead</p>
+            <div class="testimonial-stars">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Professional, proactive, and always delivering on time. His data visualizations are both insightful and visually appealing."</p>
+          </div>
+          <div class="testimonial-slide">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan" alt="Avatar" class="testimonial-avatar">
+            <h4>Jordan Lee</h4>
+            <p class="testimonial-role">ML Engineer</p>
+            <div class="testimonial-stars">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Impressive grasp of scikit-learn and pandas. I would recommend Eslam for any data or ML-related role."</p>
+          </div>
+          <div class="testimonial-slide">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maya" alt="Avatar" class="testimonial-avatar">
+            <h4>Maya Patel</h4>
+            <p class="testimonial-role">Product Manager</p>
+            <div class="testimonial-stars">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Clear communication and solid technical delivery. He turns complex data into actionable insights."</p>
+          </div>
+          <div class="testimonial-slide">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Omar" alt="Avatar" class="testimonial-avatar">
+            <h4>Omar Khalil</h4>
+            <p class="testimonial-role">Startup Founder</p>
+            <div class="testimonial-stars">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Reliable and skilled. Delivered our analytics pipeline on schedule with excellent documentation."</p>
+          </div>
+        </div>
+        <div class="carousel-dots" id="carousel-dots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 8 — SERVICES ========== -->
+  <section id="services" class="services">
+    <div class="container">
+      <h2 class="section-title" data-reveal>Services</h2>
+      <div class="services-grid">
+        <div class="service-card" data-reveal>
+          <div class="service-icon"><i class="fas fa-robot"></i></div>
+          <h3>Machine Learning Models</h3>
+          <p>Design, train, and deploy ML models for classification, regression, and clustering tasks.</p>
+        </div>
+        <div class="service-card" data-reveal>
+          <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+          <h3>Data Analysis & Visualization</h3>
+          <p>Exploratory analysis, dashboards, and clear visualizations to communicate insights.</p>
+        </div>
+        <div class="service-card" data-reveal>
+          <div class="service-icon"><i class="fas fa-broom"></i></div>
+          <h3>Data Cleaning & Preprocessing</h3>
+          <p>Handle missing values, outliers, and transform raw data into analysis-ready datasets.</p>
+        </div>
+        <div class="service-card" data-reveal>
+          <div class="service-icon"><i class="fas fa-cogs"></i></div>
+          <h3>Python Automation Scripts</h3>
+          <p>Custom scripts for workflow automation, reporting, and repetitive task elimination.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 9 — CONTACT ========== -->
+  <section id="contact" class="contact">
+    <div class="container">
+      <h2 class="section-title" data-reveal>Get In Touch</h2>
+      <div class="contact-grid" data-reveal>
+        <a href="eslamelsaid771@gmail.com" class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span>eslamelsaid771@gmail.com</span>
+        </a>
+        <a href="https://wa.me/01004872842" class="contact-item" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i>
+          <span>Phone / WhatsApp</span>
+        </a>
+        <a href="https://linkedin.com/in/eslam-el-saied" class="contact-item" target="_blank" rel="noopener">
+          <i class="fab fa-linkedin-in"></i>
+          <span>LinkedIn</span>
+        </a>
+        <a href="https://github.com/yourusername" class="contact-item" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i>
+          <span>GitHub</span>
+        </a>
+      </div>
+      <!-- Contact form (mailto, no backend) -->
+      <form id="contact-form" class="contact-form" data-reveal action="#" method="get" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-name">Full Name</label>
+            <input type="text" id="contact-name" name="name" placeholder="Your name" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="contact-email">Email</label>
+            <input type="email" id="contact-email" name="email" placeholder="your@email.com" required autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="contact-subject">Subject</label>
+          <input type="text" id="contact-subject" name="subject" placeholder="Message subject" required>
+        </div>
+        <div class="form-group">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" name="message" placeholder="Your message..." rows="5" required></textarea>
+        </div>
+        <p id="contact-form-success" class="contact-form-success" aria-live="polite" hidden>Your email client opened successfully!</p>
+        <button type="submit" class="btn btn-primary btn-contact">
+          <i class="fas fa-paper-plane"></i> Send Message
+        </button>
+      </form>
+      <div class="contact-cta" data-reveal>
+        <a href="mailto:your.email@example.com" class="btn btn-secondary btn-contact">Contact Me (direct email)</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p class="footer-copyright">&copy; <span id="year"></span> Eslam Elsaied. All rights reserved.</p>
+      <div class="footer-social">
+        <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://github.com/yourusername" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+      </div>
+    </div>
+    <button id="scroll-top" class="scroll-top" aria-label="Scroll to top">
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </footer>
+
+  <script src="projects.js"></script>
+  <script src="certifications.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
