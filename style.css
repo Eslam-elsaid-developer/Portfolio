@@ -400,27 +400,18 @@ img {
   border-color: var(--accent-1);
 }
 
-.btn-demo {
-  background: transparent;
-  color: var(--accent-3);
-  border: 1px solid rgba(6, 182, 212, 0.4);
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  margin-left: 0.5rem;
-  flex-shrink: 0;
-}
-
-.btn-demo:hover {
-  background: rgba(6, 182, 212, 0.15);
-  border-color: var(--accent-3);
-}
+/* demo-specific button styles removed */
 
 .btn-cert {
   background: rgba(99, 102, 241, 0.2);
   color: var(--accent-1);
-  font-size: 0.85rem;
-  padding: 0.5rem 1rem;
-  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  margin-top: auto;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .btn-cert:hover {
@@ -472,7 +463,36 @@ img {
 .about-text p {
   font-size: 1.05rem;
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.85;
+  letter-spacing: 0.2px;
+}
+
+/* Highlight "Machine Learning Engineer" phrase */
+.highlight-role {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  position: relative;
+  padding: 0 2px;
+  transition: all 0.3s ease;
+}
+
+.highlight-role::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-accent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.about-text p:hover .highlight-role::after {
+  opacity: 0.6;
 }
 
 /* ========== EDUCATION ========== */
@@ -719,6 +739,31 @@ img {
   font-size: 0.8rem;
 }
 
+/* ========== Show All Projects toggle + animations ========== */
+.projects-toggle-wrap {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.hidden-project {
+  display: none;
+}
+
+.project-card {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  will-change: opacity, transform;
+}
+
+.project-card.anim-in {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.project-card.anim-out {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
 /* ========== CERTIFICATIONS ========== */
 .certifications {
   padding: 5rem 0;
@@ -742,12 +787,13 @@ img {
 .cert-card {
   display: flex;
   gap: 1rem;
-  align-items: flex-start;
+  align-items: stretch;
   padding: 1.25rem;
   background: var(--bg-card);
   border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition: transform var(--transition), box-shadow var(--transition);
+  min-height: 200px;
 }
 
 .cert-card:hover {
@@ -765,7 +811,8 @@ img {
 
 .cert-info {
   flex: 1;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .cert-date {
@@ -843,110 +890,7 @@ img {
   color: var(--accent-1);
 }
 
-/* ML Demo Modal */
-.demo-modal-content {
-  max-width: 420px;
-  width: 100%;
-}
-
-.demo-modal-box {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  padding: 1.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
-}
-
-.demo-modal-title {
-  font-size: 1.2rem;
-  margin-bottom: 1.25rem;
-  text-align: center;
-  color: var(--text-primary);
-}
-
-.demo-form {
-  margin-bottom: 0;
-}
-
-.demo-form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.demo-form-group {
-  margin-bottom: 1rem;
-}
-
-.demo-form-group label {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.35rem;
-}
-
-.demo-form-group input,
-.demo-form-group select {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  font-family: var(--font-main);
-  font-size: 1rem;
-  color: var(--text-primary);
-  background: var(--bg-dark);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius);
-}
-
-.demo-predict-btn {
-  width: 100%;
-  margin-top: 0.5rem;
-  justify-content: center;
-}
-
-.demo-result {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  text-align: center;
-}
-
-.demo-result-prob {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--accent-3);
-  margin-bottom: 0.35rem;
-}
-
-.demo-result-pred {
-  font-size: 1rem;
-  color: var(--text-primary);
-}
-
-.demo-result.revealed .demo-result-prob,
-.demo-result.revealed .demo-result-pred {
-  animation: demoResultFade 0.5s ease;
-}
-
-@keyframes demoResultFade {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 480px) {
-  .demo-form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .demo-modal-box {
-    padding: 1.25rem;
-  }
-}
+/* ML demo styles removed */
 
 /* ========== TESTIMONIALS (Carousel) ========== */
 .testimonials {
@@ -1089,7 +1033,7 @@ img {
 
 .contact-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -1103,6 +1047,7 @@ img {
   border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  min-width: 180px;
 }
 
 .contact-item:hover {

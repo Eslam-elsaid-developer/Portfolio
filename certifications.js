@@ -59,4 +59,5 @@ var certificationsData = [
   //   date: '01/01/2026',
   //   image: 'https://placehold.co/800x600/16213e/fff?text=Certificate+Image'
   // }
+
 ];

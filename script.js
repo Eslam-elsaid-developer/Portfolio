@@ -191,18 +191,81 @@
       link.appendChild(document.createTextNode(' GitHub'));
       content.appendChild(link);
 
-      if (p.demoType === 'classification') {
-        var demoBtn = document.createElement('button');
-        demoBtn.type = 'button';
-        demoBtn.className = 'btn btn-demo';
-        demoBtn.innerHTML = '<i class="fas fa-play"></i> Try Demo';
-        demoBtn.addEventListener('click', function () { openDemoModal(); });
-        content.appendChild(demoBtn);
-      }
+      // demo button removed (ML demo modal feature cleaned up)
 
       card.appendChild(content);
       grid.appendChild(card);
     }
+  })();
+
+  /* ========== SHOW ALL PROJECTS TOGGLE ========== */
+  (function setupProjectsToggle() {
+    const grid = document.getElementById('projects-grid');
+    if (!grid) return;
+    const COLLAPSE_COUNT = 6;
+    const cards = Array.prototype.slice.call(grid.querySelectorAll('.project-card'));
+    if (cards.length <= COLLAPSE_COUNT) return;
+
+    // Create toggle button wrapper and button (centered)
+    const wrap = document.createElement('div');
+    wrap.className = 'projects-toggle-wrap';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-secondary btn-toggle-projects';
+    btn.textContent = 'Show All Projects';
+    wrap.appendChild(btn);
+    // Insert after the projects grid
+    grid.parentNode.insertBefore(wrap, grid.nextSibling);
+
+    // Initially hide extra cards (keep in DOM)
+    const hiddenCards = [];
+    for (let i = COLLAPSE_COUNT; i < cards.length; i++) {
+      const c = cards[i];
+      c.classList.add('hidden-project'); // CSS will set display:none
+      hiddenCards.push(c);
+    }
+
+    let expanded = false;
+
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      const priorScroll = window.scrollY || window.pageYOffset;
+      if (!expanded) {
+        // Expand: reveal each hidden card with a smooth animation
+        hiddenCards.forEach(function (card) {
+          // Prepare animation-start state
+          card.classList.add('anim-in');
+          // Make element participate in layout by removing display:none
+          card.classList.remove('hidden-project');
+          // Ensure style is applied before removing the anim-in class
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              card.classList.remove('anim-in');
+            });
+          });
+        });
+        btn.textContent = 'Show Less';
+        expanded = true;
+      } else {
+        // Collapse: animate out then hide from layout
+        hiddenCards.forEach(function (card) {
+          // Start collapse animation
+          card.classList.add('anim-out');
+          // After transition ends, add hidden-project to remove from layout
+          var onEnd = function (ev) {
+            if (ev.propertyName && ev.propertyName !== 'opacity') return;
+            card.classList.remove('anim-out');
+            card.classList.add('hidden-project');
+            card.removeEventListener('transitionend', onEnd);
+          };
+          card.addEventListener('transitionend', onEnd);
+        });
+        btn.textContent = 'Show All Projects';
+        expanded = false;
+      }
+      // Try to avoid jump by restoring scroll position shortly after layout change
+      setTimeout(function () { window.scrollTo({ top: priorScroll }); }, 20);
+    });
   })();
 
   /* ========== CERTIFICATIONS SECTION: RENDER CARDS FROM certificationsData ========== */
@@ -257,78 +320,7 @@
     }
   })();
 
-  /* ========== ML DEMO MODAL (classification simulation) ========== */
-  (function demoModal() {
-    var demoModalEl = document.getElementById('demo-modal');
-    var demoOverlay = document.getElementById('demo-modal-overlay');
-    var demoCloseBtn = document.getElementById('demo-modal-close');
-    var demoForm = document.getElementById('demo-form');
-    var demoResult = document.getElementById('demo-result');
-    var demoResultProbText = document.getElementById('demo-result-prob-text');
-    var demoResultPredText = document.getElementById('demo-result-pred-text');
-
-    function openDemoModal() {
-      if (demoModalEl) {
-        demoModalEl.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        if (demoResult) {
-          demoResult.hidden = true;
-          demoResult.classList.remove('revealed');
-        }
-      }
-    }
-
-    function closeDemoModal() {
-      if (demoModalEl) {
-        demoModalEl.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    }
-
-    function weightedSurvivalProbability(age, fare, pclass, gender) {
-      var base = 0.5;
-      if (pclass === 1) base += 0.22;
-      else if (pclass === 2) base += 0.08;
-      else base -= 0.15;
-      if (gender === 'female') base += 0.28;
-      else base -= 0.1;
-      var ageNorm = Math.max(0, Math.min(80, age));
-      base += (1 - ageNorm / 80) * 0.15;
-      var fareNorm = Math.min(100, fare) / 100;
-      base += fareNorm * 0.08;
-      base += (Math.random() - 0.5) * 0.08;
-      return Math.max(0, Math.min(1, base));
-    }
-
-    if (demoForm) {
-      demoForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var age = parseInt(document.getElementById('demo-age').value, 10) || 30;
-        var fare = parseFloat(document.getElementById('demo-fare').value) || 32;
-        var pclass = parseInt(document.getElementById('demo-pclass').value, 10) || 1;
-        var gender = document.getElementById('demo-gender').value || 'male';
-        var prob = weightedSurvivalProbability(age, fare, pclass, gender);
-        var pct = Math.round(prob * 100);
-        var survived = prob >= 0.5;
-        if (demoResultProbText) demoResultProbText.textContent = 'Survival Probability: ' + pct + '%';
-        if (demoResultPredText) demoResultPredText.textContent = 'Prediction: ' + (survived ? 'Survived' : 'Did Not Survive');
-        if (demoResult) {
-          demoResult.hidden = false;
-          demoResult.removeAttribute('hidden');
-          demoResult.offsetHeight;
-          demoResult.classList.add('revealed');
-        }
-      });
-    }
-
-    if (demoCloseBtn) demoCloseBtn.addEventListener('click', closeDemoModal);
-    if (demoOverlay) demoOverlay.addEventListener('click', closeDemoModal);
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && demoModalEl && demoModalEl.classList.contains('active')) {
-        closeDemoModal();
-      }
-    });
-  })();
+  // ML demo modal removed — related elements and handlers deleted
 
   /* ========== SCROLL REVEAL ANIMATIONS ========== */
   const revealOffset = 80;

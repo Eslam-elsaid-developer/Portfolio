@@ -30,5 +30,7 @@ var projectsData = [
     github: 'https://github.com/yourusername/project3',
     image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2022/02/Heart-Disease-Prediction-using-Machine-Learning.webp',
     category: 'Web'
-  }
+  },
+
+
 ];
