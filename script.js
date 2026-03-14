@@ -134,139 +134,283 @@
     });
   }
 
-  /* ========== PROJECTS SECTION: RENDER CARDS FROM projectsData ========== */
-  (function renderProjects() {
+  /* ========== PROJECTS SECTION: RENDER CATEGORIES FROM projectsData ========== */
+  (function renderProjectsAndCategories() {
     var grid = document.getElementById('projects-grid');
+    var headerControls = document.getElementById('projects-header-controls');
+    var btnBackCategories = document.getElementById('btn-back-categories');
     if (!grid) return;
+    
     if (typeof projectsData === 'undefined' || !projectsData.length) {
-      var placeholder = document.createElement('p');
-      placeholder.className = 'projects-placeholder';
-      placeholder.textContent = 'Projects are currently being prepared. Check back soon.';
-      grid.appendChild(placeholder);
+      grid.innerHTML = '<p class="projects-placeholder">Projects are currently being prepared. Check back soon.</p>';
       return;
     }
-    var i, p, card, imgWrap, img, content, title, desc, tagsWrap, tag, link, icon;
-    for (i = 0; i < projectsData.length; i++) {
-      p = projectsData[i];
-      card = document.createElement('article');
+
+    // Extract unique categories and their project counts
+    var categoriesMap = {};
+    for (var i = 0; i < projectsData.length; i++) {
+      var p = projectsData[i];
+      if (p.category) {
+        if (!categoriesMap[p.category]) {
+          categoriesMap[p.category] = { count: 1 };
+        } else {
+          categoriesMap[p.category].count++;
+        }
+      }
+    }
+    
+    var categories = Object.keys(categoriesMap);
+
+    var categoryIcons = {
+      'AI': 'fa-brain',
+      'Data Analysis': 'fa-chart-line',
+      'Web': 'fa-code'
+    };
+    
+    function getCategoryIcon(catName) {
+      if (categoryIcons[catName]) return categoryIcons[catName];
+      // fallback icon
+      return 'fa-folder';
+    }
+
+    function createCardHTML(image, title, clickHandlerStr, buttonHTML, badgesHTML, descHTML) {
+      var card = document.createElement('article');
       card.className = 'project-card';
       card.setAttribute('data-reveal', '');
+      card.classList.add('revealed'); // since it might render after initial reveal
 
-      imgWrap = document.createElement('div');
+      var imgWrap = document.createElement('div');
       imgWrap.className = 'project-image';
-      img = document.createElement('img');
-      img.src = p.image || '';
-      img.alt = p.title || 'Project';
+      var img = document.createElement('img');
+      img.src = image || '';
+      img.alt = title || 'Card Image';
       imgWrap.appendChild(img);
       card.appendChild(imgWrap);
 
-      content = document.createElement('div');
+      var content = document.createElement('div');
       content.className = 'project-content';
-      title = document.createElement('h3');
-      title.textContent = p.title || '';
-      content.appendChild(title);
-      desc = document.createElement('p');
-      desc.textContent = p.description || '';
-      content.appendChild(desc);
+      
+      var h3 = document.createElement('h3');
+      h3.textContent = title || '';
+      content.appendChild(h3);
 
-      tagsWrap = document.createElement('div');
-      tagsWrap.className = 'project-tags';
-      if (p.tools && p.tools.length) {
-        for (var t = 0; t < p.tools.length; t++) {
-          tag = document.createElement('span');
-          tag.textContent = p.tools[t];
-          tagsWrap.appendChild(tag);
-        }
+      if (descHTML) {
+          var desc = document.createElement('p');
+          desc.textContent = descHTML;
+          content.appendChild(desc);
       }
-      content.appendChild(tagsWrap);
 
-      link = document.createElement('a');
-      link.href = p.github || '#';
-      link.className = 'btn btn-github';
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener');
-      icon = document.createElement('i');
-      icon.className = 'fab fa-github';
-      link.appendChild(icon);
-      link.appendChild(document.createTextNode(' GitHub'));
-      content.appendChild(link);
-
-      // demo button removed (ML demo modal feature cleaned up)
+      if (badgesHTML) {
+        var tagsWrap = document.createElement('div');
+        tagsWrap.className = 'project-tags';
+        for(let z=0; z<badgesHTML.length; z++) {
+           let tag = document.createElement('span');
+           tag.textContent = badgesHTML[z];
+           tagsWrap.appendChild(tag);
+        }
+        content.appendChild(tagsWrap);
+      }
+      
+      if (buttonHTML) {
+         content.appendChild(buttonHTML);
+      }
 
       card.appendChild(content);
-      grid.appendChild(card);
+      return card;
     }
+
+    // Render Categories
+    function renderCategories() {
+      grid.innerHTML = '';
+      if (headerControls) headerControls.style.display = 'none';
+
+      categoriesUtilsRenderCategoryCards();
+      
+      // Update Scroll buttons
+      setTimeout(function() {
+        if (grid._updateScrollButtons) grid._updateScrollButtons();
+      }, 50);
+    }
+    
+    function categoriesUtilsRenderCategoryCards() {
+        for (let i = 0; i< categories.length; i++) {
+          let catName = categories[i];
+          let catData = categoriesMap[catName];
+          let count = catData.count;
+          let iconClass = getCategoryIcon(catName);
+          
+          let card = document.createElement('article');
+          card.className = 'project-card category-card';
+          card.setAttribute('data-reveal', '');
+          card.classList.add('revealed');
+
+          // Gradient Header with Icon
+          let header = document.createElement('div');
+          header.className = 'category-header';
+          let icon = document.createElement('i');
+          icon.className = 'fas ' + iconClass + ' category-icon';
+          header.appendChild(icon);
+          card.appendChild(header);
+
+          // Content
+          let content = document.createElement('div');
+          content.className = 'project-content';
+          
+          let title = document.createElement('h3');
+          title.textContent = catName;
+          content.appendChild(title);
+
+          let countBadge = document.createElement('span');
+          countBadge.className = 'category-count';
+          countBadge.textContent = count + ' Project' + (count > 1 ? 's' : '');
+          content.appendChild(countBadge);
+
+          let desc = document.createElement('p');
+          desc.textContent = 'Explore my projects in ' + catName + '.';
+          content.appendChild(desc);
+          
+          let btn = document.createElement('button');
+          btn.className = 'btn btn-primary';
+          btn.style.marginTop = 'auto';
+          btn.textContent = 'Explore Projects';
+          btn.onclick = function() {
+            renderProjectsByCategory(catName);
+          };
+          content.appendChild(btn);
+
+          card.appendChild(content);
+          grid.appendChild(card);
+      }
+    }
+
+    // Render Projects for a category
+    function renderProjectsByCategory(categoryName) {
+      grid.innerHTML = '';
+      if (headerControls) headerControls.style.display = 'flex';
+
+      var filteredProjects = projectsData.filter(function(p) { return p.category === categoryName; });
+      
+      for (var i = 0; i < filteredProjects.length; i++) {
+        var p = filteredProjects[i];
+        
+        var link = document.createElement('a');
+        link.href = p.github || '#';
+        link.className = 'btn btn-github';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener');
+        var icon = document.createElement('i');
+        icon.className = 'fab fa-github';
+        link.appendChild(icon);
+        link.appendChild(document.createTextNode(' GitHub'));
+
+        var card = createCardHTML(p.image, p.title, null, link, p.tools, p.description);
+        grid.appendChild(card);
+      }
+
+      // Update Scroll buttons
+      grid.scrollTo({ left: 0, behavior: 'auto' });
+      setTimeout(function() {
+        if (grid._updateScrollButtons) grid._updateScrollButtons();
+      }, 50);
+    }
+
+    if (btnBackCategories) {
+      btnBackCategories.addEventListener('click', function(e) {
+        e.preventDefault();
+        renderCategories();
+      });
+    }
+
+    // Initial render
+    renderCategories();
+
   })();
 
-  /* ========== SHOW ALL PROJECTS TOGGLE ========== */
-  (function setupProjectsToggle() {
+  /* ========== PROJECTS SCROLL NAVIGATION ========== */
+  (function setupProjectScrollNav() {
     const grid = document.getElementById('projects-grid');
     if (!grid) return;
-    const COLLAPSE_COUNT = 6;
-    const cards = Array.prototype.slice.call(grid.querySelectorAll('.project-card'));
-    if (cards.length <= COLLAPSE_COUNT) return;
+    const container = grid.closest('.container');
+    if (!container) return;
 
-    // Create toggle button wrapper and button (centered)
-    const wrap = document.createElement('div');
-    wrap.className = 'projects-toggle-wrap';
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'btn btn-secondary btn-toggle-projects';
-    btn.textContent = 'Show All Projects';
-    wrap.appendChild(btn);
-    // Insert after the projects grid
-    grid.parentNode.insertBefore(wrap, grid.nextSibling);
+    const btnLeft = document.createElement('button');
+    btnLeft.type = 'button';
+    btnLeft.className = 'projects-scroll-btn projects-scroll-btn-left';
+    btnLeft.setAttribute('aria-label', 'Scroll projects left');
+    btnLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
 
-    // Initially hide extra cards (keep in DOM)
-    const hiddenCards = [];
-    for (let i = COLLAPSE_COUNT; i < cards.length; i++) {
-      const c = cards[i];
-      c.classList.add('hidden-project'); // CSS will set display:none
-      hiddenCards.push(c);
+    const btnRight = document.createElement('button');
+    btnRight.type = 'button';
+    btnRight.className = 'projects-scroll-btn projects-scroll-btn-right';
+    btnRight.setAttribute('aria-label', 'Scroll projects right');
+    btnRight.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+    let autoSlideInterval;
+
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(() => {
+        const maxScroll = grid.scrollWidth - grid.clientWidth;
+        if (grid.scrollLeft >= maxScroll - 5) {
+          // At end, scroll to start
+          grid.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollByDirection(1);
+        }
+      }, 4000);
     }
 
-    let expanded = false;
+    function stopAutoSlide() {
+      clearInterval(autoSlideInterval);
+    }
 
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      const priorScroll = window.scrollY || window.pageYOffset;
-      if (!expanded) {
-        // Expand: reveal each hidden card with a smooth animation
-        hiddenCards.forEach(function (card) {
-          // Prepare animation-start state
-          card.classList.add('anim-in');
-          // Make element participate in layout by removing display:none
-          card.classList.remove('hidden-project');
-          // Ensure style is applied before removing the anim-in class
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              card.classList.remove('anim-in');
-            });
-          });
-        });
-        btn.textContent = 'Show Less';
-        expanded = true;
-      } else {
-        // Collapse: animate out then hide from layout
-        hiddenCards.forEach(function (card) {
-          // Start collapse animation
-          card.classList.add('anim-out');
-          // After transition ends, add hidden-project to remove from layout
-          var onEnd = function (ev) {
-            if (ev.propertyName && ev.propertyName !== 'opacity') return;
-            card.classList.remove('anim-out');
-            card.classList.add('hidden-project');
-            card.removeEventListener('transitionend', onEnd);
-          };
-          card.addEventListener('transitionend', onEnd);
-        });
-        btn.textContent = 'Show All Projects';
-        expanded = false;
-      }
-      // Try to avoid jump by restoring scroll position shortly after layout change
-      setTimeout(function () { window.scrollTo({ top: priorScroll }); }, 20);
-    });
+    function getScrollStep() {
+      const firstCard = grid.querySelector('.project-card');
+      if (!firstCard) return grid.clientWidth;
+      const gap = parseFloat(getComputedStyle(grid).gap) || 0;
+      return firstCard.getBoundingClientRect().width + gap;
+    }
+
+    function updateButtons() {
+      const maxScroll = grid.scrollWidth - grid.clientWidth;
+      const atStart = grid.scrollLeft <= 5;
+      const atEnd = grid.scrollLeft >= maxScroll - 5;
+
+      btnLeft.disabled = atStart;
+      btnRight.disabled = atEnd;
+
+      const shouldShow = maxScroll > 10;
+      btnLeft.style.display = shouldShow ? 'flex' : 'none';
+      btnRight.style.display = shouldShow ? 'flex' : 'none';
+    }
+
+    function scrollByDirection(direction) {
+      const step = getScrollStep();
+      const maxScroll = grid.scrollWidth - grid.clientWidth;
+      const target = Math.min(Math.max(grid.scrollLeft + step * direction, 0), maxScroll);
+      grid.scrollTo({ left: target, behavior: 'smooth' });
+    }
+
+    container.appendChild(btnLeft);
+    container.appendChild(btnRight);
+
+    startAutoSlide();
+
+    grid.addEventListener('mouseenter', stopAutoSlide);
+    grid.addEventListener('mouseleave', startAutoSlide);
+
+    btnLeft.addEventListener('click', function () { scrollByDirection(-1); stopAutoSlide(); startAutoSlide(); });
+    btnRight.addEventListener('click', function () { scrollByDirection(1); stopAutoSlide(); startAutoSlide(); });
+
+    grid.addEventListener('scroll', updateButtons);
+    window.addEventListener('resize', updateButtons);
+
+    setTimeout(updateButtons, 50);
+
+    // Expose helper for other parts of the app (e.g. show/hide toggle)
+    grid._updateScrollButtons = updateButtons;
   })();
+
+  // old show all projects toggle removed
 
   /* ========== CERTIFICATIONS SECTION: RENDER CARDS FROM certificationsData ========== */
   (function renderCertifications() {
@@ -496,7 +640,7 @@
   /* ========== CONTACT FORM (mailto) ========== */
   const contactForm = document.getElementById('contact-form');
   const contactFormSuccess = document.getElementById('contact-form-success');
-  const CONTACT_EMAIL = 'your_email@example.com';
+  const CONTACT_EMAIL = 'eslamelsaid771@gmail.com';
 
   if (contactForm) {
     contactForm.addEventListener('submit', function (e) {

@@ -627,6 +627,7 @@ img {
 
 .skill-fill.animated {
   /* width set via inline or JS from data-level */
+  transition: width 1s ease-out;
 }
 
 .skill-category-tools .tools-tags {
@@ -650,14 +651,103 @@ img {
 
 /* ========== PROJECTS ========== */
 .projects {
+  position: relative;
   padding: 5rem 0;
   background: var(--bg-card);
+  overflow: hidden;
+}
+
+.projects .container {
+  position: relative;
+  overflow: visible;
 }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: 320px;
   gap: 2rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 0.25rem;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  width: calc(3 * 320px + 2 * 2rem);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.projects-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.project-card {
+  scroll-snap-align: start;
+  width: 320px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .projects-grid {
+    grid-auto-columns: 320px;
+    width: calc(2 * 320px + 1 * 2rem);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-auto-columns: min(280px, 85vw);
+    width: min(280px, 85vw);
+    gap: 1rem;
+    scroll-padding: 0 0.5rem;
+  }
+  .projects-scroll-btn-left {
+    left: 0.5rem;
+    z-index: 10;
+  }
+  .projects-scroll-btn-right {
+    right: 0.5rem;
+    z-index: 10;
+  }
+}
+
+.projects-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(16, 16, 22, 0.75);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition), background var(--transition), opacity var(--transition);
+  z-index: 5;
+}
+
+.projects-scroll-btn:hover {
+  transform: translateY(-50%) scale(1.05);
+  background: rgba(99, 102, 241, 0.75);
+}
+
+.projects-scroll-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.projects-scroll-btn-left {
+  left: -2.4rem;
+}
+
+.projects-scroll-btn-right {
+  right: -2.4rem;
 }
 
 .projects-placeholder {
@@ -711,6 +801,62 @@ img {
 .project-content h3 {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
+}
+
+.project-content p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Category Specific Styles */
+
+.category-header {
+  height: 200px;
+  background: var(--gradient-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.category-icon {
+  font-size: 4rem;
+  color: white;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+  position: relative;
+  z-index: 2;
+  transition: transform var(--transition);
+}
+
+.project-card:hover .category-icon {
+  transform: scale(1.1) translateY(-5px);
+}
+
+.category-count {
+  font-size: 0.85rem;
+  color: var(--accent-3);
+  background: rgba(6, 182, 212, 0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .project-content p {

@@ -2,7 +2,6 @@
  * Projects data for the portfolio.
  * Edit this file only to add, remove, or update projects.
  * Each project: title, description, tools (array), github, image, category.
- * Optional: demoType: "classification" adds a "Try Demo" button with survival prediction simulation.
  */
 
 var projectsData = [
@@ -12,7 +11,7 @@ var projectsData = [
     tools: ['Python', 'scikit-learn','Pandas'],
     github: 'https://github.com/yourusername/project1',
     image: 'https://png.pngtree.com/thumb_back/fh260/background/20230308/pngtree-ecological-concept-of-greenhouse-gas-emissions-photo-image_1875482.jpg',
-    category: 'ML',
+    category: 'AI',
     // demoType: 'classification'
   },
   {
@@ -30,7 +29,39 @@ var projectsData = [
     github: 'https://github.com/yourusername/project3',
     image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2022/02/Heart-Disease-Prediction-using-Machine-Learning.webp',
     category: 'Web'
+    
   },
 
 
+
+
+
+
+
+
+
+  {
+    title: 'Heart Disease Diagnostics',
+    description: 'Executed rigorous data preprocessing and medical feature analysis on the UCI Heart Disease dataset. Developed a predictive insights pipeline to identify key health risk factors and support clinical decision-making.',
+    tools: ['Pandas','NumPy','Matplotlib', 'Seaborn'],
+    github: 'https://github.com/yourusername/project3',
+    image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2022/02/Heart-Disease-Prediction-using-Machine-Learning.webp',
+    category: 'Web'
+  },
+  {
+    title: 'Heart Disease Diagnostics',
+    description: 'Executed rigorous data preprocessing and medical feature analysis on the UCI Heart Disease dataset. Developed a predictive insights pipeline to identify key health risk factors and support clinical decision-making.',
+    tools: ['Pandas','NumPy','Matplotlib', 'Seaborn'],
+    github: 'https://github.com/yourusername/project3',
+    image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2022/02/Heart-Disease-Prediction-using-Machine-Learning.webp',
+    category: 'Web'
+  },
+    {
+    title: 'Heart Disease Diagnostics',
+    description: 'Executed rigorous data preprocessing and medical feature analysis on the UCI Heart Disease dataset. Developed a predictive insights pipeline to identify key health risk factors and support clinical decision-making.',
+    tools: ['Pandas','NumPy','Matplotlib', 'Seaborn'],
+    github: 'https://github.com/yourusername/project3',
+    image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2022/02/Heart-Disease-Prediction-using-Machine-Learning.webp',
+    category: 'AI'
+  },
 ];
