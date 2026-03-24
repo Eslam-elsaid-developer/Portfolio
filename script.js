@@ -17,15 +17,30 @@
   const TYPING_PAUSE_AFTER_TYPE = 2000;
   const TYPING_PAUSE_AFTER_DELETE = 500;
 
-  /* ========== LOADING ANIMATION ========== */
-  const loader = document.getElementById('loader');
-  if (loader) {
-    window.addEventListener('load', function () {
-      setTimeout(function () {
-        loader.classList.add('hidden');
-      }, 600);
-    });
+  /* ========== GSAP INTRO & LOADING ANIMATION ========== */
+  const introLoader = document.getElementById('loader');
+  
+  function initIntro() {
+    if (introLoader && typeof gsap !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+      const tl = gsap.timeline({
+        onComplete: () => {
+          document.body.style.overflow = '';
+          introLoader.style.pointerEvents = 'none';
+          if (typeof initScrollAnimations === 'function') initScrollAnimations();
+        }
+      });
+      tl.to('.intro-logo', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+        .to('.progress-bar-container', { opacity: 1, duration: 0.4 }, "-=0.2")
+        .to('.progress-bar', { width: '100%', duration: 1.2, ease: 'power2.inOut' })
+        .to('.intro-loader', { opacity: 0, duration: 0.6, ease: 'power2.inOut', delay: 0.2 });
+    } else {
+      if (introLoader) introLoader.style.display = 'none';
+      if (typeof initScrollAnimations === 'function') setTimeout(initScrollAnimations, 100);
+    }
   }
+
+  window.addEventListener('load', initIntro);
 
   /* ========== TYPING ANIMATION (continuous loop) ========== */
   const typingEl = document.getElementById('typing-text');
@@ -134,11 +149,11 @@
     });
   }
 
-  /* ========== PROJECTS SECTION: RENDER CATEGORIES FROM projectsData ========== */
-  (function renderProjectsAndCategories() {
+  /* ========== PROJECTS SECTION: FILTERING & GRID RENDER ========== */
+  (function initProjectsGrid() {
     var grid = document.getElementById('projects-grid');
-    var headerControls = document.getElementById('projects-header-controls');
-    var btnBackCategories = document.getElementById('btn-back-categories');
+    var filterContainer = document.getElementById('projects-filter');
+    var btnShowMore = document.getElementById('btn-show-more');
     if (!grid) return;
     
     if (typeof projectsData === 'undefined' || !projectsData.length) {
@@ -146,44 +161,29 @@
       return;
     }
 
-    // Extract unique categories and their project counts
-    var categoriesMap = {};
+    var currentFilter = 'All';
+    var defaultVisibleCount = 6;
+    var visibleCount = defaultVisibleCount;
+    var filteredProjects = [];
+
+    // Extract unique categories
+    var categories = ['All'];
     for (var i = 0; i < projectsData.length; i++) {
-      var p = projectsData[i];
-      if (p.category) {
-        if (!categoriesMap[p.category]) {
-          categoriesMap[p.category] = { count: 1 };
-        } else {
-          categoriesMap[p.category].count++;
+        var p = projectsData[i];
+        if (p.category && categories.indexOf(p.category) === -1) {
+            categories.push(p.category);
         }
-      }
-    }
-    
-    var categories = Object.keys(categoriesMap);
-
-    var categoryIcons = {
-      'AI': 'fa-brain',
-      'Data Analysis': 'fa-chart-line',
-      'Web': 'fa-code'
-    };
-    
-    function getCategoryIcon(catName) {
-      if (categoryIcons[catName]) return categoryIcons[catName];
-      // fallback icon
-      return 'fa-folder';
     }
 
-    function createCardHTML(image, title, clickHandlerStr, buttonHTML, badgesHTML, descHTML) {
+    function createCardHTML(project, index) {
       var card = document.createElement('article');
       card.className = 'project-card';
-      card.setAttribute('data-reveal', '');
-      card.classList.add('revealed'); // since it might render after initial reveal
 
       var imgWrap = document.createElement('div');
       imgWrap.className = 'project-image';
       var img = document.createElement('img');
-      img.src = image || '';
-      img.alt = title || 'Card Image';
+      img.src = project.image || '';
+      img.alt = project.title || 'Project Image';
       imgWrap.appendChild(img);
       card.appendChild(imgWrap);
 
@@ -191,298 +191,363 @@
       content.className = 'project-content';
       
       var h3 = document.createElement('h3');
-      h3.textContent = title || '';
+      h3.textContent = project.title || '';
       content.appendChild(h3);
 
-      if (descHTML) {
+      if (project.description) {
           var desc = document.createElement('p');
-          desc.textContent = descHTML;
+          desc.textContent = project.description;
           content.appendChild(desc);
       }
 
-      if (badgesHTML) {
+      if (project.tools && project.tools.length) {
         var tagsWrap = document.createElement('div');
         tagsWrap.className = 'project-tags';
-        for(let z=0; z<badgesHTML.length; z++) {
-           let tag = document.createElement('span');
-           tag.textContent = badgesHTML[z];
+        for(var z=0; z < project.tools.length; z++) {
+           var tag = document.createElement('span');
+           tag.textContent = project.tools[z];
            tagsWrap.appendChild(tag);
         }
         content.appendChild(tagsWrap);
       }
       
-      if (buttonHTML) {
-         content.appendChild(buttonHTML);
-      }
+      var link = document.createElement('a');
+      link.href = project.github || '#';
+      link.className = 'btn btn-github';
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener');
+      link.style.marginTop = 'auto'; // push to bottom
+      
+      var icon = document.createElement('i');
+      icon.className = 'fab fa-github';
+      link.appendChild(icon);
+      link.appendChild(document.createTextNode(' GitHub'));
+      content.appendChild(link);
 
       card.appendChild(content);
       return card;
     }
 
-    // Render Categories
-    function renderCategories() {
-      grid.innerHTML = '';
-      if (headerControls) headerControls.style.display = 'none';
-
-      categoriesUtilsRenderCategoryCards();
-      
-      // Update Scroll buttons
-      setTimeout(function() {
-        if (grid._updateScrollButtons) grid._updateScrollButtons();
-      }, 50);
-    }
-    
-    function categoriesUtilsRenderCategoryCards() {
-        for (let i = 0; i< categories.length; i++) {
-          let catName = categories[i];
-          let catData = categoriesMap[catName];
-          let count = catData.count;
-          let iconClass = getCategoryIcon(catName);
-          
-          let card = document.createElement('article');
-          card.className = 'project-card category-card';
-          card.setAttribute('data-reveal', '');
-          card.classList.add('revealed');
-
-          // Gradient Header with Icon
-          let header = document.createElement('div');
-          header.className = 'category-header';
-          let icon = document.createElement('i');
-          icon.className = 'fas ' + iconClass + ' category-icon';
-          header.appendChild(icon);
-          card.appendChild(header);
-
-          // Content
-          let content = document.createElement('div');
-          content.className = 'project-content';
-          
-          let title = document.createElement('h3');
-          title.textContent = catName;
-          content.appendChild(title);
-
-          let countBadge = document.createElement('span');
-          countBadge.className = 'category-count';
-          countBadge.textContent = count + ' Project' + (count > 1 ? 's' : '');
-          content.appendChild(countBadge);
-
-          let desc = document.createElement('p');
-          desc.textContent = 'Explore my projects in ' + catName + '.';
-          content.appendChild(desc);
-          
-          let btn = document.createElement('button');
-          btn.className = 'btn btn-primary';
-          btn.style.marginTop = 'auto';
-          btn.textContent = 'Explore Projects';
-          btn.onclick = function() {
-            renderProjectsByCategory(catName);
-          };
-          content.appendChild(btn);
-
-          card.appendChild(content);
-          grid.appendChild(card);
-      }
-    }
-
-    // Render Projects for a category
-    function renderProjectsByCategory(categoryName) {
-      grid.innerHTML = '';
-      if (headerControls) headerControls.style.display = 'flex';
-
-      var filteredProjects = projectsData.filter(function(p) { return p.category === categoryName; });
-      
-      for (var i = 0; i < filteredProjects.length; i++) {
-        var p = filteredProjects[i];
+    function renderFilters() {
+        if (!filterContainer) return;
+        filterContainer.innerHTML = '';
         
-        var link = document.createElement('a');
-        link.href = p.github || '#';
-        link.className = 'btn btn-github';
-        link.setAttribute('target', '_blank');
-        link.setAttribute('rel', 'noopener');
-        var icon = document.createElement('i');
-        icon.className = 'fab fa-github';
-        link.appendChild(icon);
-        link.appendChild(document.createTextNode(' GitHub'));
-
-        var card = createCardHTML(p.image, p.title, null, link, p.tools, p.description);
-        grid.appendChild(card);
-      }
-
-      // Update Scroll buttons
-      grid.scrollTo({ left: 0, behavior: 'auto' });
-      setTimeout(function() {
-        if (grid._updateScrollButtons) grid._updateScrollButtons();
-      }, 50);
-    }
-
-    if (btnBackCategories) {
-      btnBackCategories.addEventListener('click', function(e) {
-        e.preventDefault();
-        renderCategories();
-      });
-    }
-
-    // Initial render
-    renderCategories();
-
-  })();
-
-  /* ========== PROJECTS SCROLL NAVIGATION ========== */
-  (function setupProjectScrollNav() {
-    const grid = document.getElementById('projects-grid');
-    if (!grid) return;
-    const container = grid.closest('.container');
-    if (!container) return;
-
-    const btnLeft = document.createElement('button');
-    btnLeft.type = 'button';
-    btnLeft.className = 'projects-scroll-btn projects-scroll-btn-left';
-    btnLeft.setAttribute('aria-label', 'Scroll projects left');
-    btnLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
-
-    const btnRight = document.createElement('button');
-    btnRight.type = 'button';
-    btnRight.className = 'projects-scroll-btn projects-scroll-btn-right';
-    btnRight.setAttribute('aria-label', 'Scroll projects right');
-    btnRight.innerHTML = '<i class="fas fa-chevron-right"></i>';
-
-    let autoSlideInterval;
-
-    function startAutoSlide() {
-      autoSlideInterval = setInterval(() => {
-        const maxScroll = grid.scrollWidth - grid.clientWidth;
-        if (grid.scrollLeft >= maxScroll - 5) {
-          // At end, scroll to start
-          grid.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          scrollByDirection(1);
+        for (var i = 0; i < categories.length; i++) {
+            var cat = categories[i];
+            var btn = document.createElement('button');
+            btn.className = 'filter-btn' + (cat === currentFilter ? ' active' : '');
+            btn.textContent = cat;
+            btn.setAttribute('data-filter', cat);
+            
+            btn.addEventListener('click', function(e) {
+                var selectedFilter = e.target.getAttribute('data-filter');
+                if (currentFilter === selectedFilter) return;
+                
+                // Update active state
+                var allBtns = filterContainer.querySelectorAll('.filter-btn');
+                allBtns.forEach(function(b) { b.classList.remove('active'); });
+                e.target.classList.add('active');
+                
+                currentFilter = selectedFilter;
+                visibleCount = defaultVisibleCount; // Reset count on filter change
+                renderProjects();
+            });
+            
+            filterContainer.appendChild(btn);
         }
-      }, 4000);
     }
 
-    function stopAutoSlide() {
-      clearInterval(autoSlideInterval);
+    function renderProjects() {
+        grid.innerHTML = '';
+        
+        // Filter projects
+        if (currentFilter === 'All') {
+            filteredProjects = projectsData;
+        } else {
+            filteredProjects = projectsData.filter(function(p) {
+                return p.category === currentFilter;
+            });
+        }
+        
+        if (filteredProjects.length === 0) {
+            grid.innerHTML = '<p class="projects-placeholder">No projects found in this category.</p>';
+            if (btnShowMore) btnShowMore.style.display = 'none';
+            return;
+        }
+        
+        // Render up to visibleCount
+        var toRender = filteredProjects.slice(0, visibleCount);
+        for (var i = 0; i < toRender.length; i++) {
+            grid.appendChild(createCardHTML(toRender[i], i));
+        }
+        
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(grid.querySelectorAll('.project-card'), 
+                { autoAlpha: 0, scale: 0.95, y: 30 },
+                { autoAlpha: 1, scale: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out' }
+            );
+        }
+        
+        // Show More/Less button logic
+        if (btnShowMore) {
+            if (filteredProjects.length <= defaultVisibleCount) {
+                // If 6 or fewer total, hide the button
+                btnShowMore.style.display = 'none';
+            } else {
+                btnShowMore.style.display = 'inline-flex';
+                // If we are showing all of them
+                if (visibleCount >= filteredProjects.length) {
+                    btnShowMore.innerHTML = 'Show Less <i class="fas fa-chevron-up"></i>';
+                } else {
+                    btnShowMore.innerHTML = 'Show More <i class="fas fa-chevron-down"></i>';
+                }
+            }
+        }
     }
 
-    function getScrollStep() {
-      const firstCard = grid.querySelector('.project-card');
-      if (!firstCard) return grid.clientWidth;
-      const gap = parseFloat(getComputedStyle(grid).gap) || 0;
-      return firstCard.getBoundingClientRect().width + gap;
+    if (btnShowMore) {
+        btnShowMore.addEventListener('click', function() {
+            if (visibleCount >= filteredProjects.length) {
+                // Currently expanded, so collapse
+                visibleCount = defaultVisibleCount;
+                var sectionTop = document.getElementById('projects').offsetTop;
+                window.scrollTo({ top: sectionTop - 50, behavior: 'smooth' });
+            } else {
+                // Currently collapsed, so expand
+                visibleCount = filteredProjects.length;
+            }
+            renderProjects();
+        });
     }
 
-    function updateButtons() {
-      const maxScroll = grid.scrollWidth - grid.clientWidth;
-      const atStart = grid.scrollLeft <= 5;
-      const atEnd = grid.scrollLeft >= maxScroll - 5;
+    renderFilters();
+    renderProjects();
 
-      btnLeft.disabled = atStart;
-      btnRight.disabled = atEnd;
-
-      const shouldShow = maxScroll > 10;
-      btnLeft.style.display = shouldShow ? 'flex' : 'none';
-      btnRight.style.display = shouldShow ? 'flex' : 'none';
-    }
-
-    function scrollByDirection(direction) {
-      const step = getScrollStep();
-      const maxScroll = grid.scrollWidth - grid.clientWidth;
-      const target = Math.min(Math.max(grid.scrollLeft + step * direction, 0), maxScroll);
-      grid.scrollTo({ left: target, behavior: 'smooth' });
-    }
-
-    container.appendChild(btnLeft);
-    container.appendChild(btnRight);
-
-    startAutoSlide();
-
-    grid.addEventListener('mouseenter', stopAutoSlide);
-    grid.addEventListener('mouseleave', startAutoSlide);
-
-    btnLeft.addEventListener('click', function () { scrollByDirection(-1); stopAutoSlide(); startAutoSlide(); });
-    btnRight.addEventListener('click', function () { scrollByDirection(1); stopAutoSlide(); startAutoSlide(); });
-
-    grid.addEventListener('scroll', updateButtons);
-    window.addEventListener('resize', updateButtons);
-
-    setTimeout(updateButtons, 50);
-
-    // Expose helper for other parts of the app (e.g. show/hide toggle)
-    grid._updateScrollButtons = updateButtons;
   })();
 
   // old show all projects toggle removed
 
-  /* ========== CERTIFICATIONS SECTION: RENDER CARDS FROM certificationsData ========== */
-  (function renderCertifications() {
+  /* ========== CERTIFICATIONS SECTION: FILTERING & GRID RENDER ========== */
+  document.addEventListener('DOMContentLoaded', function() {
     var grid = document.getElementById('certifications-grid');
+    var filterContainer = document.getElementById('certifications-filter');
     if (!grid) return;
+    
     if (typeof certificationsData === 'undefined' || !certificationsData.length) {
-      var placeholder = document.createElement('p');
-      placeholder.className = 'certifications-placeholder';
-      placeholder.textContent = 'Certificates will be added soon.';
-      grid.appendChild(placeholder);
+      grid.innerHTML = '<p class="certifications-placeholder">Certificates will be added soon.</p>';
       return;
     }
-    var i, c, card, img, info, dateSpan, title, org, btn;
-    for (i = 0; i < certificationsData.length; i++) {
-      c = certificationsData[i];
-      card = document.createElement('div');
-      card.className = 'cert-card';
-      card.setAttribute('data-reveal', '');
 
-      img = document.createElement('img');
-      img.src = c.image || '';
+    var currentFilter = 'All';
+    var filteredCerts = [];
+
+    // Extract unique categories
+    var categories = ['All'];
+    for (var i = 0; i < certificationsData.length; i++) {
+        var c = certificationsData[i];
+        if (c.category && categories.indexOf(c.category) === -1) {
+            categories.push(c.category);
+        }
+    }
+
+    function createCertCardHTML(cert, index) {
+      var card = document.createElement('div');
+      card.className = 'cert-card';
+
+      var img = document.createElement('img');
+      img.src = cert.image || '';
       img.alt = 'Certificate';
       img.className = 'cert-img';
       card.appendChild(img);
 
-      info = document.createElement('div');
+      var info = document.createElement('div');
       info.className = 'cert-info';
 
-      dateSpan = document.createElement('span');
+      var dateSpan = document.createElement('span');
       dateSpan.className = 'cert-date';
-      dateSpan.textContent = c.date || '';
+      dateSpan.textContent = cert.date || '';
       info.appendChild(dateSpan);
 
-      title = document.createElement('h4');
-      title.textContent = c.title || '';
+      var title = document.createElement('h4');
+      title.textContent = cert.title || '';
       info.appendChild(title);
 
-      org = document.createElement('p');
-      org.textContent = c.organization || '';
+      var org = document.createElement('p');
+      org.textContent = cert.organization || '';
       info.appendChild(org);
 
-      btn = document.createElement('button');
+      var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn-cert';
-      btn.setAttribute('data-cert-url', c.image || '');
+      btn.setAttribute('data-cert-url', cert.image || '');
       btn.textContent = 'View Certificate';
       info.appendChild(btn);
 
       card.appendChild(info);
-      grid.appendChild(card);
+      return card;
     }
-  })();
+
+    function renderFilters() {
+        if (!filterContainer) return;
+        filterContainer.innerHTML = '';
+        
+        for (var i = 0; i < categories.length; i++) {
+            var cat = categories[i];
+            var btn = document.createElement('button');
+            btn.className = 'filter-btn' + (cat === currentFilter ? ' active' : '');
+            btn.textContent = cat;
+            btn.setAttribute('data-filter', cat);
+            
+            btn.addEventListener('click', function(e) {
+                var selectedFilter = e.target.getAttribute('data-filter');
+                if (currentFilter === selectedFilter) return;
+                
+                // Update active state
+                var allBtns = filterContainer.querySelectorAll('.filter-btn');
+                allBtns.forEach(function(b) { b.classList.remove('active'); });
+                e.target.classList.add('active');
+                
+                currentFilter = selectedFilter;
+                renderCertsGrid();
+            });
+            
+            filterContainer.appendChild(btn);
+        }
+    }
+
+    function renderCertsGrid() {
+        grid.innerHTML = '';
+        
+        // Filter certs
+        if (currentFilter === 'All') {
+            filteredCerts = certificationsData;
+        } else {
+            filteredCerts = certificationsData.filter(function(c) {
+                return c.category === currentFilter;
+            });
+        }
+        
+        if (filteredCerts.length === 0) {
+            grid.innerHTML = '<p class="certifications-placeholder">No certificates found in this category.</p>';
+            return;
+        }
+        
+        // Render
+        for (var i = 0; i < filteredCerts.length; i++) {
+            grid.appendChild(createCertCardHTML(filteredCerts[i], i));
+        }
+
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(grid.querySelectorAll('.cert-card'), 
+                { autoAlpha: 0, scale: 0.95, y: 30 },
+                { autoAlpha: 1, scale: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out' }
+            );
+        }
+    }
+
+    renderFilters();
+    renderCertsGrid();
+
+  });
 
   // ML demo modal removed — related elements and handlers deleted
 
-  /* ========== SCROLL REVEAL ANIMATIONS ========== */
-  const revealOffset = 80;
+  /* ========== GSAP SCROLL ANIMATIONS ========== */
+  function initScrollAnimations() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger);
 
-  function reveal() {
-    var revealEls = document.querySelectorAll('[data-reveal]');
-    revealEls.forEach(function (el) {
-      const top = el.getBoundingClientRect().top;
-      const winHeight = window.innerHeight;
-      if (top < winHeight - revealOffset) {
-        el.classList.add('revealed');
+    // 1. Scroll Progress Bar
+    gsap.to('#scroll-progress', {
+      width: '100%',
+      ease: 'none',
+      scrollTrigger: {
+        trigger: document.body,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.3
       }
     });
-  }
 
-  window.addEventListener('scroll', reveal);
-  window.addEventListener('load', reveal);
-  reveal();
+    // 2. Hero Background Parallax Elements
+    gsap.utils.toArray('.shape').forEach(shape => {
+      const speed = Math.random() * 0.4 + 0.1;
+      gsap.to(shape, {
+        y: () => (window.innerHeight * speed),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true
+        }
+      });
+    });
+
+    // 3. Section Titles Reveal
+    gsap.utils.toArray('.section-title').forEach(title => {
+      gsap.fromTo(title, 
+        { autoAlpha: 0, y: 40 },
+        {
+          autoAlpha: 1, 
+          y: 0, 
+          duration: 0.8, 
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: title,
+            start: 'top 85%'
+          }
+        }
+      );
+    });
+
+    // 3. Stagger elements with data-reveal
+    const sections = document.querySelectorAll('section');
+    sections.forEach(section => {
+      const reveals = section.querySelectorAll('[data-reveal]:not(.section-title)');
+      if (reveals.length) {
+        gsap.fromTo(reveals, 
+          { autoAlpha: 0, y: 30 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 80%'
+            }
+          }
+        );
+      }
+    });
+
+    // 4. Experience Timeline Line
+    const expTimeline = document.querySelector('.experience-timeline');
+    if (expTimeline) {
+      const line = document.createElement('div');
+      line.style.position = 'absolute'; line.style.top = '0'; line.style.bottom = '0';
+      line.style.left = '6px'; line.style.width = '2px';
+      line.style.background = 'var(--accent-1)';
+      line.style.transformOrigin = 'top'; line.style.transform = 'scaleY(0)';
+      line.style.zIndex = '0';
+      expTimeline.appendChild(line);
+
+      gsap.to(line, {
+        scaleY: 1, ease: 'none',
+        scrollTrigger: { trigger: expTimeline, start: 'top 60%', end: 'bottom 40%', scrub: true }
+      });
+      
+      const items = expTimeline.querySelectorAll('.experience-item');
+      gsap.fromTo(items, 
+        { autoAlpha: 0, x: -30 },
+        { autoAlpha: 1, x: 0, duration: 0.6, stagger: 0.2, ease: 'power2.out',
+          scrollTrigger: { trigger: expTimeline, start: 'top 70%' }
+        }
+      );
+    }
+  }
 
   /* ========== SKILL PROGRESS BARS (animate when visible) ========== */
   const skillFills = document.querySelectorAll('.skill-fill');
